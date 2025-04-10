@@ -1,15 +1,23 @@
-# 🔐 Secure SSH Launcher with GPG & 2FA
+README.md
+markdown
+Copy
+Edit
+# SecureLauncher 🔐
 
-A security-first login system for SSH that uses **multiple encrypted layers** and **Google Authenticator** to protect your remote access credentials.
+SecureLauncher is a minimal and smart script-based system to safely manage SSH access to multiple remote servers using:
 
-This project lets you securely store your SSH private key and 2FA secret using GPG and OpenSSL, requiring two passwords and a 2FA code to initiate the login.  
-It generates unique login scripts per server — ideal for managing multiple services securely.
+- 🔑 Encrypted `.pem` keys with OpenSSL
+- 🧩 Optional 2FA with Google Authenticator (TOTP)
+- 🗝️ GPG-encrypted scripts and secrets
+- 🧠 Clean login flow using sequential password protection (Password 1, 2FA code, Password 2)
 
 ---
 
-## 📁 Structure
+## 📁 Folder Structure
 
-secure-ssh-launcher/ ├── encryptfiles.sh # Encrypts your .pem and 2FA secrets ├── generate_launcher.sh # Generates secure launcher per server ├── templates/ │ └── securessh_template.sh # Encrypted base logic for login ├── login/ │ └── server1/ │ ├── login_server1.sh │ └── securessh_server1.sh.gpg └── README.md
+Each server should have its own folder inside the `logins/` directory:
+
+logins/ ├── server1/ │ ├── google.txt # Your Google Auth secret key (TOTP) │ ├── server.pem # Your original SSH key (unencrypted) │ ├── securessh-template.sh # Secure SSH script logic (reused for all) │ └── generate_launcher.sh # Used to generate the encrypted launcher
 
 yaml
 Copy
@@ -17,65 +25,65 @@ Edit
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ First Time Setup
 
-### 1. 🔐 Encrypt your credentials
+Run the following script to generate example files and guide you through the process of setting up the launcher:
 
 ```bash
-./encryptfiles.sh path/to/key.pem path/to/google_auth.key
-You’ll set:
+./setup.sh
+This will:
 
-Password 1 → For the Google Authenticator secret
+Help create .pem and google.txt files
 
-Password 2 → For your SSH private key
+Encrypt the .pem file using OpenSSL
 
-2. 🛠️ Generate your secure login
+Encrypt the Google secret key using GPG
+
+Generate a secure securessh.sh.gpg script
+
+Build a launcher called login.sh to start the session securely
+
+🔓 Using the Launcher
+Once the setup is complete, simply:
+
 bash
 Copy
 Edit
-./generate_launcher.sh --server server1 --ip 123.123.123.123 --user ubuntu
-This creates:
+cd logins/server1/
+./login.sh
+You’ll be prompted to:
 
-login/server1/login_server1.sh → Secure login script
+Enter Password 1 (to decrypt the 2FA key)
 
-login/server1/securessh_server1.sh.gpg → Encrypted login logic
+Enter your Google Authenticator code
 
-3. 🔑 Use your login
+Enter Password 2 (to decrypt the SSH key)
+
+Automatically SSH into the remote server using your .pem
+
+🔄 Creating Additional Server Logins
+You can create separate secure login folders for each server. For example:
+
 bash
 Copy
 Edit
-cd login/server1
-./login_server1.sh
-You’ll be prompted for:
+cp -r logins/server1 logins/server2
+Update the IP, username, and file names in the new folder, then re-run generate_launcher.sh.
 
-Password 1 (to decrypt 2FA secret)
+✅ Requirements
+gpg
 
-Your 6-digit Google Authenticator code
+openssl
 
-Password 2 (to decrypt the .pem file)
+ssh
 
-🧠 How it works
-Each login flow:
+Optional: oathtool (for local 2FA code validation)
 
-Decrypts your 2FA key
+⚠️ Disclaimer
+This project is for educational purposes. Please audit any script and customize it according to your security model. Never share your encrypted files or secrets.
 
-Prompts for 2FA token
+💡 Contribution
+Pull requests are welcome. Feel free to open issues to suggest new features or improvements.
 
-Decrypts your SSH private key
-
-Initiates a secure SSH connection
-
-No credentials are ever stored unencrypted.
-
-🧪 Testing (Demo Mode)
-You can simulate the process using example .pem and .key files without needing to actually connect to a server.
-
-📄 License
-MIT — feel free to fork and adapt.
-
-💡 Ideas to Contribute?
-Add biometric/face auth support (macOS/Linux)
-
-Integration with other 2FA providers
-
-Add web dashboard to manage servers
+License
+MIT
