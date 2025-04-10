@@ -1,7 +1,4 @@
-README.md
-markdown
-Copy
-Edit
+
 # SecureLauncher 🔐
 
 SecureLauncher is a minimal and smart script-based system to safely manage SSH access to multiple remote servers using:
